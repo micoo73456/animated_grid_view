@@ -8,7 +8,7 @@ void main() {
 
 class Tile extends StatelessWidget {
   final Color c;
-  final void Function(Tile) onTap;
+  final VoidCallback onTap;
 
   const Tile({Key? key, required this.c, required this.onTap})
       : super(key: key);
@@ -18,7 +18,7 @@ class Tile extends StatelessWidget {
     return Container(
       color: c,
       child: GestureDetector(
-        onTap: () => onTap(this),
+        onTap: onTap,
       ),
     );
   }
@@ -32,33 +32,35 @@ class AnimatedGridViewDemo extends StatefulWidget {
 }
 
 class _AnimatedGridViewDemoState extends State<AnimatedGridViewDemo> {
-  final List<Widget> _children = [];
-  late Widget _emptyTile;
+  final List<int> _childValues = [];
+  final int _emptyTileValue = 0;
 
-  void _handleTap(Widget t) {
+  void _handleTap(int index) {
     setState(() {
-      int destination = _children.indexOf(_emptyTile);
-      int source = _children.indexOf(t);
-      _children[destination] = t;
-      _children[source] = _emptyTile;
+      int destination = _childValues.indexOf(_emptyTileValue);
+      int source = _childValues.indexOf(index);
+      _childValues[destination] = source;
+      _childValues[source] = _emptyTileValue;
     });
   }
 
-  void _initChildren() {
-    for (int i = 0; i < 14; i++) {
-      _children.add(
-        Tile(
-          c: Color.lerp(Colors.red, Colors.blue, i / 8.0)!,
-          onTap: _handleTap,
-        ),
-      );
-    }
-    _children.add(Tile(
-      c: Colors.transparent,
-      onTap: _handleTap,
-    ));
+  List<Widget> _buildChildren() {
+    return _childValues
+        .map((e) => Tile(
+              key: ValueKey(e),
+              c: e == _emptyTileValue
+                  ? Colors.transparent
+                  : Color.lerp(Colors.red, Colors.blue,
+                      (e as double) / (_childValues.length - 1))!,
+              onTap: () => _handleTap(e),
+            ))
+        .toList();
+  }
 
-    _emptyTile = _children.last;
+  void _initChildren() {
+    for (int i = 0; i <= 15; i++) {
+      _childValues.add(i);
+    }
   }
 
   @override
@@ -80,11 +82,11 @@ class _AnimatedGridViewDemoState extends State<AnimatedGridViewDemo> {
           title: const Text("AnimatedGridViewDemo"),
         ),
         body: AnimatedGridView.count(
-          crossAxisCount: 7,
-          children: _children,
+          crossAxisCount: 4,
+          children: _buildChildren(),
         ),
         floatingActionButton: FloatingActionButton.small(
-            onPressed: () => setState(() => _children.shuffle())),
+            onPressed: () => setState(() => _childValues.shuffle())),
       ),
     );
   }

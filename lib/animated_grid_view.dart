@@ -1,5 +1,7 @@
 // AnimatedGridView is a GridView which implicitly animates the repositioning of children elements when the list of children changes.
 //
+// AnimatedGridView uses the child Widgets' Key property to animate its position. The simplest way to make the children animate correctly is to provide them with a ValueKey. Having children without Keys or with duplicate Keys may lead to undesired results.
+//
 // The current implementation:
 //  - Only intended to support child reordering, not the addition or removal of children.
 //  - Is brittle (e.g. doesn't handle all Animation status updates)
@@ -92,10 +94,12 @@ class _AnimatedGridViewState extends State<AnimatedGridView>
     }
   }
 
+  // TODO: If this gets called while the animation is in progress the state gets corrupted.
   void _updatePreviousIndices(List<Widget> oldChildren) {
     _previousIndices.clear();
     for (var e in widget.children) {
-      _previousIndices.add(oldChildren.indexOf(e));
+      _previousIndices
+          .add(oldChildren.indexWhere((element) => e.key == element.key));
     }
   }
 
