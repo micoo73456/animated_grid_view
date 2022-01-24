@@ -5,7 +5,7 @@
 // The current implementation:
 //  - Only exposes GridView.count and all parameters except children and crossAxisCount are ignored.
 //  - Only intended to support child reordering.
-//  - - The behavior when adding/removing children is unspecified https://github.com/micoo73456/animated_grid_view/issues/1
+//  - Adding/removing children is partially supported -- it will update without error but the behavior is likely not desirable.
 //  - Is brittle (e.g. doesn't handle all Animation status updates)
 
 import 'package:flutter/gestures.dart';
@@ -62,14 +62,14 @@ class AnimatedGridView extends StatefulWidget {
 
 class _AnimatedGridViewState extends State<AnimatedGridView>
     with SingleTickerProviderStateMixin {
-  final List<int> _previousIndices = [];
+  final List<Widget> _previousChildren = [];
   late AnimationController _controller;
 
   @override
   void initState() {
     super.initState();
 
-    _updatePreviousIndices(widget.children);
+    _updatePreviousChildren(widget.children);
 
     _controller = AnimationController(
       vsync: this,
@@ -91,18 +91,24 @@ class _AnimatedGridViewState extends State<AnimatedGridView>
         // TODO: Handle this case.
         break;
       case AnimationStatus.completed:
-        _updatePreviousIndices(widget.children);
+        _updatePreviousChildren(widget.children);
         _controller.reset();
         break;
     }
   }
 
-  void _updatePreviousIndices(List<Widget> oldChildren) {
-    _previousIndices.clear();
+  void _updatePreviousChildren(List<Widget> oldChildren) {
+    _previousChildren.clear();
+    _previousChildren.addAll(oldChildren);
+  }
+
+  List<int> get _previousIndices {
+    List<int> result = [];
     for (var e in widget.children) {
-      _previousIndices
-          .add(oldChildren.indexWhere((element) => e.key == element.key));
+      result
+          .add(_previousChildren.indexWhere((element) => e.key == element.key));
     }
+    return result;
   }
 
   void _maybeAnimate() {
@@ -117,8 +123,15 @@ class _AnimatedGridViewState extends State<AnimatedGridView>
   @override
   void didUpdateWidget(covariant AnimatedGridView oldWidget) {
     super.didUpdateWidget(oldWidget);
-    _updatePreviousIndices(oldWidget.children);
     _maybeAnimate();
+  }
+
+  // Calculates the union of old and new children.
+  List<Widget> _getChildren() {
+    final List<Widget> result = List.from(widget.children);
+    result.addAll(_previousChildren.where(
+        (previous) => !widget.children.any((e) => e.key == previous.key)));
+    return result;
   }
 
   @override
@@ -126,7 +139,7 @@ class _AnimatedGridViewState extends State<AnimatedGridView>
     return GridView(
       // TODO: Why is this key necessary?
       key: UniqueKey(),
-      children: widget.children,
+      children: _getChildren(),
       gridDelegate: AnimatedGridDelegate(
         crossAxisCount: widget.crossAxisCount,
         f: _controller.value,
