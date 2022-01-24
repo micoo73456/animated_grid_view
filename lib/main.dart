@@ -32,10 +32,10 @@ class AnimatedGridViewDemo extends StatefulWidget {
 }
 
 class _AnimatedGridViewDemoState extends State<AnimatedGridViewDemo> {
-  final List<Tile> _children = [];
-  late Tile _emptyTile;
+  final List<Widget> _children = [];
+  late Widget _emptyTile;
 
-  void _handleTap(Tile t) {
+  void _handleTap(Widget t) {
     setState(() {
       int destination = _children.indexOf(_emptyTile);
       int source = _children.indexOf(t);
@@ -45,7 +45,7 @@ class _AnimatedGridViewDemoState extends State<AnimatedGridViewDemo> {
   }
 
   void _initChildren() {
-    for (int i = 0; i < 8; i++) {
+    for (int i = 0; i < 14; i++) {
       _children.add(
         Tile(
           c: Color.lerp(Colors.red, Colors.blue, i / 8.0)!,
@@ -83,6 +83,8 @@ class _AnimatedGridViewDemoState extends State<AnimatedGridViewDemo> {
           crossAxisCount: 3,
           children: _children,
         ),
+        floatingActionButton: FloatingActionButton.small(
+            onPressed: () => setState(() => _children.shuffle())),
       ),
     );
   }
