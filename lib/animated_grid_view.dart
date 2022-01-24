@@ -3,7 +3,9 @@
 // AnimatedGridView uses the child Widgets' Key property to animate its position. The simplest way to make the children animate correctly is to provide them with a ValueKey. Having children without Keys or with duplicate Keys may lead to undesired results.
 //
 // The current implementation:
-//  - Only intended to support child reordering, not the addition or removal of children.
+//  - Only exposes GridView.count and all parameters except children and crossAxisCount are ignored.
+//  - Only intended to support child reordering.
+//  - - The behavior when adding/removing children is unspecified.
 //  - Is brittle (e.g. doesn't handle all Animation status updates)
 
 import 'package:flutter/gestures.dart';
@@ -25,6 +27,7 @@ class AnimatedGridView extends StatefulWidget {
   final int crossAxisCount;
   final Duration duration;
 
+  // TODO: Pass the remaining arguments to the GridView.
   AnimatedGridView.count({
     Key? key,
     Axis scrollDirection = Axis.vertical,
