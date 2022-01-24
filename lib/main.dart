@@ -24,23 +24,6 @@ class Tile extends StatelessWidget {
   }
 }
 
-List<Widget> _children(void Function(Tile) onTap) {
-  List<Widget> children = [];
-  for (int i = 0; i < 8; i++) {
-    children.add(
-      Tile(
-        c: Color.lerp(Colors.red, Colors.blue, i / 8.0)!,
-        onTap: onTap,
-      ),
-    );
-  }
-  children.add(Tile(
-    c: Colors.transparent,
-    onTap: onTap,
-  ));
-  return children;
-}
-
 class AnimatedGridViewDemo extends StatefulWidget {
   const AnimatedGridViewDemo({Key? key}) : super(key: key);
 
@@ -65,12 +48,16 @@ class _AnimatedGridViewDemoState extends State<AnimatedGridViewDemo> {
     for (int i = 0; i < 8; i++) {
       _children.add(
         Tile(
+          // TODO: Try to remove this key.
+          key: ValueKey(i),
           c: Color.lerp(Colors.red, Colors.blue, i / 8.0)!,
           onTap: _handleTap,
         ),
       );
     }
     _children.add(Tile(
+      // TODO: Try to remove this key.
+      key: const ValueKey(-1),
       c: Colors.transparent,
       onTap: _handleTap,
     ));
@@ -97,8 +84,6 @@ class _AnimatedGridViewDemoState extends State<AnimatedGridViewDemo> {
           title: const Text("AnimatedGridViewDemo"),
         ),
         body: AnimatedGridView.count(
-          // TODO: Why is this key necessary?
-          key: UniqueKey(),
           crossAxisCount: 3,
           children: _children,
         ),

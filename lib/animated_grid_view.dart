@@ -6,6 +6,8 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 
+import 'animated_grid_delegate.dart';
+
 SliverGridGeometry lerp(SliverGridGeometry a, SliverGridGeometry b, double f) {
   return SliverGridGeometry(
       scrollOffset: a.scrollOffset * (1.0 - f) + b.scrollOffset * f,
@@ -69,9 +71,19 @@ class _AnimatedGridViewState extends State<AnimatedGridView>
     // ..addStatusListener(_finalizeAnimation);
   }
 
+  List<int> _previousIndices() => [];
+
   @override
   Widget build(BuildContext context) {
-    return GridView.count(
-        crossAxisCount: widget.crossAxisCount, children: widget.children);
+    return GridView(
+      // TODO: Why is this key necessary?
+      key: UniqueKey(),
+      children: widget.children,
+      gridDelegate: AnimatedGridDelegate(
+        crossAxisCount: 3,
+        f: _controller.value,
+        previousIndex: _previousIndices(),
+      ),
+    );
   }
 }
