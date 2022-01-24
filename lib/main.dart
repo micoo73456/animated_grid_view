@@ -41,7 +41,6 @@ class _AnimatedGridViewDemoState extends State<AnimatedGridViewDemo> {
       int tappedSource = _childValues.indexOf(tappedIndex);
       _childValues[tappedDestination] = tappedIndex;
       _childValues[tappedSource] = _emptyTileValue;
-      print(_childValues);
     });
   }
 
