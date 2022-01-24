@@ -80,7 +80,7 @@ class _AnimatedGridViewDemoState extends State<AnimatedGridViewDemo> {
           title: const Text("AnimatedGridViewDemo"),
         ),
         body: AnimatedGridView.count(
-          crossAxisCount: 3,
+          crossAxisCount: 7,
           children: _children,
         ),
         floatingActionButton: FloatingActionButton.small(

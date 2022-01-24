@@ -122,7 +122,7 @@ class _AnimatedGridViewState extends State<AnimatedGridView>
       key: UniqueKey(),
       children: widget.children,
       gridDelegate: AnimatedGridDelegate(
-        crossAxisCount: 3,
+        crossAxisCount: widget.crossAxisCount,
         f: _controller.value,
         previousIndex: _previousIndices,
       ),
