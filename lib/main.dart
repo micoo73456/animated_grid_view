@@ -48,16 +48,12 @@ class _AnimatedGridViewDemoState extends State<AnimatedGridViewDemo> {
     for (int i = 0; i < 8; i++) {
       _children.add(
         Tile(
-          // TODO: Try to remove this key.
-          key: ValueKey(i),
           c: Color.lerp(Colors.red, Colors.blue, i / 8.0)!,
           onTap: _handleTap,
         ),
       );
     }
     _children.add(Tile(
-      // TODO: Try to remove this key.
-      key: const ValueKey(-1),
       c: Colors.transparent,
       onTap: _handleTap,
     ));

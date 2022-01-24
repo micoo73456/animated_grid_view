@@ -1,6 +1,8 @@
 // AnimatedGridView is a GridView which implicitly animates the repositioning of children elements when the list of children changes.
 //
-// The current implementation is only intended to support child reordering, not the addition or removal of children.
+// The current implementation:
+//  - Only intended to support child reordering, not the addition or removal of children.
+//  - Is brittle (e.g. doesn't handle all Animation status updates)
 
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -21,7 +23,7 @@ class AnimatedGridView extends StatefulWidget {
   final int crossAxisCount;
   final Duration duration;
 
-  const AnimatedGridView.count({
+  AnimatedGridView.count({
     Key? key,
     Axis scrollDirection = Axis.vertical,
     bool reverse = false,
@@ -38,7 +40,7 @@ class AnimatedGridView extends StatefulWidget {
     bool addRepaintBoundaries = true,
     bool addSemanticIndexes = true,
     double? cacheExtent,
-    this.children = const <Widget>[],
+    List<Widget> children = const <Widget>[],
     int? semanticChildCount,
     DragStartBehavior dragStartBehavior = DragStartBehavior.start,
     ScrollViewKeyboardDismissBehavior keyboardDismissBehavior =
@@ -46,7 +48,8 @@ class AnimatedGridView extends StatefulWidget {
     String? restorationId,
     Clip clipBehavior = Clip.hardEdge,
     this.duration = const Duration(milliseconds: 500),
-  }) : super(key: key);
+  })  : children = List.from(children),
+        super(key: key);
 
   @override
   _AnimatedGridViewState createState() => _AnimatedGridViewState();
@@ -54,24 +57,63 @@ class AnimatedGridView extends StatefulWidget {
 
 class _AnimatedGridViewState extends State<AnimatedGridView>
     with SingleTickerProviderStateMixin {
-  final List<Widget> _previousChildren = [];
+  final List<int> _previousIndices = [];
   late AnimationController _controller;
 
   @override
   void initState() {
     super.initState();
 
-    _previousChildren.addAll(widget.children);
+    _updatePreviousIndices(widget.children);
 
     _controller = AnimationController(
-      vsync: this, // the SingleTickerProviderStateMixin
+      vsync: this,
       duration: widget.duration,
-    );
-    // ..addListener(() => setState(() {}))
-    // ..addStatusListener(_finalizeAnimation);
+    )
+      ..addListener(() => setState(() {/* Rebuild every frame */}))
+      ..addStatusListener(_finalizeAnimation);
   }
 
-  List<int> _previousIndices() => [];
+  void _finalizeAnimation(AnimationStatus status) {
+    switch (status) {
+      case AnimationStatus.dismissed:
+        // TODO: Handle this case.
+        break;
+      case AnimationStatus.forward:
+        // TODO: Handle this case.
+        break;
+      case AnimationStatus.reverse:
+        // TODO: Handle this case.
+        break;
+      case AnimationStatus.completed:
+        _updatePreviousIndices(widget.children);
+        _controller.reset();
+        break;
+    }
+  }
+
+  void _updatePreviousIndices(List<Widget> oldChildren) {
+    _previousIndices.clear();
+    for (var e in widget.children) {
+      _previousIndices.add(oldChildren.indexOf(e));
+    }
+  }
+
+  void _maybeAnimate() {
+    for (int i = 0; i < _previousIndices.length; i++) {
+      if (_previousIndices[i] != i) {
+        _controller.animateTo(1.0);
+        return;
+      }
+    }
+  }
+
+  @override
+  void didUpdateWidget(covariant AnimatedGridView oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    _updatePreviousIndices(oldWidget.children);
+    _maybeAnimate();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -82,7 +124,7 @@ class _AnimatedGridViewState extends State<AnimatedGridView>
       gridDelegate: AnimatedGridDelegate(
         crossAxisCount: 3,
         f: _controller.value,
-        previousIndex: _previousIndices(),
+        previousIndex: _previousIndices,
       ),
     );
   }
