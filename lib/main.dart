@@ -58,8 +58,20 @@ class _AnimatedGridViewDemoState extends State<AnimatedGridViewDemo> {
   }
 
   void _initChildren() {
+    _childValues.clear();
     for (int i = 0; i <= 15; i++) {
       _childValues.add(i);
+    }
+  }
+
+  void _addChild() {
+    _childValues.add(_childValues.length);
+  }
+
+  void _removeChild() {
+    if (_childValues.length > 1) {
+      _childValues
+          .removeAt(_childValues.lastIndexWhere((e) => e != _emptyTileValue));
     }
   }
 
@@ -85,8 +97,26 @@ class _AnimatedGridViewDemoState extends State<AnimatedGridViewDemo> {
           crossAxisCount: 4,
           children: _buildChildren(),
         ),
-        floatingActionButton: FloatingActionButton.small(
-            onPressed: () => setState(() => _childValues.shuffle())),
+        floatingActionButton: Row(
+          children: [
+            Spacer(),
+            FloatingActionButton.small(
+                child: const Icon(Icons.refresh),
+                onPressed: () => setState(() => _initChildren())),
+            Container(width: 16, height: 0),
+            FloatingActionButton.small(
+                child: const Icon(Icons.shuffle),
+                onPressed: () => setState(() => _childValues.shuffle())),
+            Container(width: 16, height: 0),
+            FloatingActionButton.small(
+                child: const Icon(Icons.add),
+                onPressed: () => setState(() => _addChild())),
+            Container(width: 16, height: 0),
+            FloatingActionButton.small(
+                child: const Icon(Icons.remove),
+                onPressed: () => setState(() => _removeChild())),
+          ],
+        ),
       ),
     );
   }

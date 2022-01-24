@@ -94,7 +94,9 @@ class _AnimatedGridViewState extends State<AnimatedGridView>
     }
   }
 
-  // TODO: If this gets called while the animation is in progress the state gets corrupted.
+  // TODO: There are some bugs:
+  //   If a child is moved from index i to j then back to i weird things happen.
+  //   Using shuffle from the demo makes subsequent moves weird.
   void _updatePreviousIndices(List<Widget> oldChildren) {
     _previousIndices.clear();
     for (var e in widget.children) {
