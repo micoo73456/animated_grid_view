@@ -5,7 +5,7 @@
 // The current implementation:
 //  - Only exposes GridView.count and all parameters except children and crossAxisCount are ignored.
 //  - Only intended to support child reordering.
-//  - - The behavior when adding/removing children is unspecified.
+//  - - The behavior when adding/removing children is unspecified https://github.com/micoo73456/animated_grid_view/issues/1
 //  - Is brittle (e.g. doesn't handle all Animation status updates)
 
 import 'package:flutter/gestures.dart';
@@ -97,9 +97,6 @@ class _AnimatedGridViewState extends State<AnimatedGridView>
     }
   }
 
-  // TODO: There are some bugs:
-  //   If a child is moved from index i to j then back to i weird things happen.
-  //   Using shuffle from the demo makes subsequent moves weird.
   void _updatePreviousIndices(List<Widget> oldChildren) {
     _previousIndices.clear();
     for (var e in widget.children) {

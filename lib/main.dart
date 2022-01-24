@@ -35,12 +35,13 @@ class _AnimatedGridViewDemoState extends State<AnimatedGridViewDemo> {
   final List<int> _childValues = [];
   final int _emptyTileValue = 0;
 
-  void _handleTap(int index) {
+  void _handleTap(int tappedIndex) {
     setState(() {
-      int destination = _childValues.indexOf(_emptyTileValue);
-      int source = _childValues.indexOf(index);
-      _childValues[destination] = source;
-      _childValues[source] = _emptyTileValue;
+      int tappedDestination = _childValues.indexOf(_emptyTileValue);
+      int tappedSource = _childValues.indexOf(tappedIndex);
+      _childValues[tappedDestination] = tappedIndex;
+      _childValues[tappedSource] = _emptyTileValue;
+      print(_childValues);
     });
   }
 
@@ -49,7 +50,7 @@ class _AnimatedGridViewDemoState extends State<AnimatedGridViewDemo> {
         .map((e) => Tile(
               key: ValueKey(e),
               c: e == _emptyTileValue
-                  ? Colors.transparent
+                  ? Colors.black
                   : Color.lerp(Colors.red, Colors.blue,
                       (e as double) / (_childValues.length - 1))!,
               onTap: () => _handleTap(e),
@@ -59,7 +60,7 @@ class _AnimatedGridViewDemoState extends State<AnimatedGridViewDemo> {
 
   void _initChildren() {
     _childValues.clear();
-    for (int i = 0; i <= 15; i++) {
+    for (int i = 0; i <= 8; i++) {
       _childValues.add(i);
     }
   }
@@ -94,7 +95,7 @@ class _AnimatedGridViewDemoState extends State<AnimatedGridViewDemo> {
           title: const Text("AnimatedGridViewDemo"),
         ),
         body: AnimatedGridView.count(
-          crossAxisCount: 4,
+          crossAxisCount: 3,
           children: _buildChildren(),
         ),
         floatingActionButton: Row(
