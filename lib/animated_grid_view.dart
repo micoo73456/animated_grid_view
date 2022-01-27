@@ -74,9 +74,7 @@ class _AnimatedGridViewState extends State<AnimatedGridView>
     _controller = AnimationController(
       vsync: this,
       duration: widget.duration,
-    )
-      ..addListener(() => setState(() {/* Rebuild every frame */}))
-      ..addStatusListener(_finalizeAnimation);
+    )..addStatusListener(_finalizeAnimation);
   }
 
   void _finalizeAnimation(AnimationStatus status) {
@@ -136,15 +134,20 @@ class _AnimatedGridViewState extends State<AnimatedGridView>
 
   @override
   Widget build(BuildContext context) {
-    return GridView(
-      // TODO: Why is this key necessary?
-      key: UniqueKey(),
-      children: _getChildren(),
-      gridDelegate: AnimatedGridDelegate(
-        crossAxisCount: widget.crossAxisCount,
-        f: _controller.value,
-        previousIndex: _previousIndices,
-      ),
+    return AnimatedBuilder(
+      animation: _controller,
+      builder: (context, _) {
+        return GridView(
+          // TODO: Why is this key necessary?
+          key: UniqueKey(),
+          children: _getChildren(),
+          gridDelegate: AnimatedGridDelegate(
+            crossAxisCount: widget.crossAxisCount,
+            f: _controller.value,
+            previousIndex: _previousIndices,
+          ),
+        );
+      },
     );
   }
 }
